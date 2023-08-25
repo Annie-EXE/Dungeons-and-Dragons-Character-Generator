@@ -1,0 +1,2 @@
+Use rapidfuzz library to account for user typos?
+Allow users to query class/race/background data before picking an option

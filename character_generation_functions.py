@@ -87,17 +87,35 @@ def choose_background(): # WIP... thinking about how to implement
 
     user_input = input("Would you like to add a 'background' to your character? (Y/N) ")
 
-    affirmative_responses = ['yes', 'y', 'yup', 'yurr', 'yas']
-    negative_responses = ['no', 'nope', 'nup', 'heck no', 'nada', 'n']
+    affirmative_responses = ['yes', 'y', ' y', 'yup', 'yurr', 'yas']
+    negative_responses = ['no', 'nope', 'nup', 'heck no', 'nada', 'n', ' n']
 
-    if user_input in affirmative_responses:
-        
+    if user_input.lower() in affirmative_responses:
+        print("Excellent! Let's choose one.\n")
+        background_data = load_json_background_data("dnd_backgrounds_processed.json")
+        background_names = [background["Background Name"] for background in background_data]
+        print("Your options are:\n")
+        print(background_names)
+        print("\nSo, what background do you pick?")
 
-    elif user_input in negative_responses:
+    elif user_input.lower() in negative_responses:
         print("Fair enough! A blank slate.")
 
     else:
         print("I will take that as a no.")
+
+
+def load_json_background_data(file_path: str):
+
+    with open(file_path, "r") as json_file:
+        loaded_data = json.load(json_file)
+    
+    return loaded_data
+
+
+def add_custom_background():
+    # Total WIP... thinking about how to implement
+    pass
 
 
 
@@ -107,3 +125,5 @@ provide_user_with_info_on_selected_race(selected_race)
 
 print(retrieve_list_of_class_options())
 selected_class = check_selected_class_is_valid("bard")
+
+choose_background()
