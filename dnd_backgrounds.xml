@@ -813,7 +813,7 @@
 	</trait>
     <trait>
         <name>Skill Proficiencies</name>
-        <text>Chose two of Arcana, Investigation, Religion, or Survival</text>
+        <text>Arcana, Investigation</text>
     </trait>
     <trait>
         <name>Languages</name>

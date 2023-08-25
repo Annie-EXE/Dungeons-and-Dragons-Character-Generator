@@ -85,9 +85,20 @@ def check_selected_class_is_valid(input_class: str) -> str:
 
 def choose_background(): # WIP... thinking about how to implement
 
-    background_desired = False
+    user_input = input("Would you like to add a 'background' to your character? (Y/N) ")
 
-    user_input = input("Would you like to add a 'background' to your character?")
+    affirmative_responses = ['yes', 'y', 'yup', 'yurr', 'yas']
+    negative_responses = ['no', 'nope', 'nup', 'heck no', 'nada', 'n']
+
+    if user_input in affirmative_responses:
+        
+
+    elif user_input in negative_responses:
+        print("Fair enough! A blank slate.")
+
+    else:
+        print("I will take that as a no.")
+
 
 
 print(retrieve_list_of_race_options())
