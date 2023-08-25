@@ -83,6 +83,13 @@ def check_selected_class_is_valid(input_class: str) -> str:
     raise ValueError("Sorry, 5e doesn't offer that class!")
 
 
+def choose_background(): # WIP... thinking about how to implement
+
+    background_desired = False
+
+    user_input = input("Would you like to add a 'background' to your character?")
+
+
 print(retrieve_list_of_race_options())
 selected_race = check_selected_race_is_valid("dragonborn")
 provide_user_with_info_on_selected_race(selected_race)
