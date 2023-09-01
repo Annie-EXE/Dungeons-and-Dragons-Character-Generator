@@ -1,5 +1,6 @@
 import requests
 import json
+import random
 
 affirmative_responses = ['yes', 'y', ' y', 'yup', 'yurr', 'yas']
 negative_responses = ['no', 'nope', 'nup', 'heck no', 'nada', 'n', ' n']
@@ -119,12 +120,12 @@ def choose_background(backgrounds_file_name: str): # TODO: Use fuzzy matching?
         if chosen_background.strip().title() in background_names:
             return chosen_background
         choose_again = input("\nThat doesn't exist - try again? (Y/N) ")
-        if choose_again in negative_responses:
+        if choose_again.lower() in negative_responses:
             print("\nNo background it is.")
             return None
 
 
-def load_json_background_data(file_path: str):
+def load_json_background_data(file_path: str) -> list[dict]:
 
     with open(file_path, "r") as json_file:
         loaded_data = json.load(json_file)
@@ -137,13 +138,65 @@ def add_custom_background():
     pass
 
 
+def generate_ability_score_numbers() -> list[int]:
 
-print(retrieve_list_of_race_options())
-selected_race = check_selected_race_is_valid("dragonborn")
-provide_user_with_info_on_selected_race(selected_race)
+    print("""\nYou can choose to roll for your ability score numbers
+          or use the predetermined numbers [15, 14, 13, 12, 10, 8].""")
+    
+    while True:
+        ability_score_decision = input("""\nDo you want to roll for your ability
+                                   scores? (Y/N) """)
+        if ability_score_decision.lower() in affirmative_responses or negative_responses:
+            break
+    
+    if ability_score_decision.lower() in affirmative_responses:
+        print("\nLet's roll!")
+        ability_score_nums = roll_for_ability_scores()
+        print(f"\nYour ability score numbers are {ability_score_nums}!")
+        return ability_score_nums
 
-print(retrieve_list_of_class_options())
-selected_class = check_selected_class_is_valid("bard")
+    else:
+        print("\nWe'll use the predetermined stats!")
+        return [15, 14, 13, 12, 10, 8]
+    
 
-backgrounds_file_name = "dnd_backgrounds_processed.json"
-choose_background(backgrounds_file_name)
+def roll_for_ability_scores() -> list[int]:
+
+    ability_score_nums = []
+    for i in range(6):
+        rolls = rolls = [random.randint(1, 6) for _ in range(4)]
+        rolls = sorted(rolls)
+        rolls.pop(0)
+        ability_score_nums.append(sum(rolls))
+    print(f"\nYour ability score numbers are {ability_score_nums}!")
+    return ability_score_nums
+
+
+def assign_ability_scores(ability_score_nums: list[int]) -> dict:
+
+    print(f"""Your abilities in DnD are Strength, Dexterity,
+          Constitution, Intelligence, Wisdom, and Charisma""")
+
+    print("""You need to assign one of your ability score
+          numbers to each ability! The higher the number, 
+          the stronger the ability.""")
+
+    pass
+
+
+def calculate_ability_modifiers(ability_score_dict: dict) -> dict:
+
+    pass
+
+
+# print(retrieve_list_of_race_options())
+# selected_race = check_selected_race_is_valid("dragonborn")
+# provide_user_with_info_on_selected_race(selected_race)
+
+# print(retrieve_list_of_class_options())
+# selected_class = check_selected_class_is_valid("bard")
+
+# backgrounds_file_name = "dnd_backgrounds_processed.json"
+# choose_background(backgrounds_file_name)
+
+generate_ability_score_numbers()
