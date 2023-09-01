@@ -1,6 +1,9 @@
 import requests
 import json
 
+affirmative_responses = ['yes', 'y', ' y', 'yup', 'yurr', 'yas']
+negative_responses = ['no', 'nope', 'nup', 'heck no', 'nada', 'n', ' n']
+
 def retrieve_list_of_race_options() -> list[str]:
 
     response = requests.get("https://www.dnd5eapi.co/api/races")
@@ -83,26 +86,42 @@ def check_selected_class_is_valid(input_class: str) -> str:
     raise ValueError("Sorry, 5e doesn't offer that class!")
 
 
-def choose_background(): # WIP... thinking about how to implement
+def give_user_option_to_choose_background(backgrounds_file_name: str): # WIP... thinking about how to implement
 
-    user_input = input("Would you like to add a 'background' to your character? (Y/N) ")
-
-    affirmative_responses = ['yes', 'y', ' y', 'yup', 'yurr', 'yas']
-    negative_responses = ['no', 'nope', 'nup', 'heck no', 'nada', 'n', ' n']
+    user_input = input("""Would you like to add a 'background' 
+                       to your character? (Y/N) """)
 
     if user_input.lower() in affirmative_responses:
         print("Excellent! Let's choose one.\n")
-        background_data = load_json_background_data("dnd_backgrounds_processed.json")
-        background_names = [background["Background Name"] for background in background_data]
-        print("Your options are:\n")
-        print(background_names)
-        print("\nSo, what background do you pick?")
+        chosen_background = choose_background(backgrounds_file_name)
+        print(f"A {chosen_background}? You've lived an interesting life!")
+        return chosen_background
 
     elif user_input.lower() in negative_responses:
         print("Fair enough! A blank slate.")
+        return None
 
     else:
         print("I will take that as a no.")
+        return None
+
+
+def choose_background(backgrounds_file_name: str): # TODO: Use fuzzy matching?
+
+    background_data = load_json_background_data(backgrounds_file_name)
+    background_names = [background["Background Name"] for background in background_data]
+
+    print("Your options are:\n")
+    print(background_names)
+
+    while True:
+        chosen_background = input("\nSo, what background do you pick? ")
+        if chosen_background.strip().title() in background_names:
+            return chosen_background
+        choose_again = input("\nThat doesn't exist - try again? (Y/N) ")
+        if choose_again in negative_responses:
+            print("\nNo background it is.")
+            return None
 
 
 def load_json_background_data(file_path: str):
@@ -126,4 +145,5 @@ provide_user_with_info_on_selected_race(selected_race)
 print(retrieve_list_of_class_options())
 selected_class = check_selected_class_is_valid("bard")
 
-choose_background()
+backgrounds_file_name = "dnd_backgrounds_processed.json"
+choose_background(backgrounds_file_name)
