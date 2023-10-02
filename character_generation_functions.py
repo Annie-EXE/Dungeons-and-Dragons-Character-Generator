@@ -5,6 +5,8 @@ import random
 affirmative_responses = ['yes', 'y', ' y', 'yup', 'yurr', 'yas']
 negative_responses = ['no', 'nope', 'nup', 'heck no', 'nada', 'n', ' n']
 
+abilities = ["STRENGTH", "DEXTERITY", "CONSTITUTION", "INTELLIGENCE", "WISDOM", "CHARISMA"]
+
 def retrieve_list_of_race_options() -> list[str]:
 
     response = requests.get("https://www.dnd5eapi.co/api/races")
@@ -174,19 +176,55 @@ def roll_for_ability_scores() -> list[int]:
 
 def assign_ability_scores(ability_score_nums: list[int]) -> dict:
 
-    print(f"""Your abilities in DnD are Strength, Dexterity,
-          Constitution, Intelligence, Wisdom, and Charisma""")
+    print(f"""Your abilities in DnD are STRENGTH, DEXTERITY,
+          CONSTITUTION, INTELLIGENCE, WISDOM, and CHARISMA.\n""")
 
     print("""You need to assign one of your ability score
           numbers to each ability! The higher the number, 
-          the stronger the ability.""")
+          the stronger the ability.\n""")
 
-    pass
+    print(f"""Remember, your available ability score numbers
+          are {ability_score_nums}.\n""")
+    
+    print(ability_score_nums)
+    
+    assigned_ability_scores = {}
+    
+    for ability in abilities:
+        assigned = False
+
+        while assigned is False:
+
+            try:
+                assigment_response = int(input(f"What score should go to {ability}? "))
+
+                if assigment_response in ability_score_nums:
+                    assigned_ability_scores[ability] = assigment_response
+                    ability_score_nums.remove(assigment_response)
+                    print(ability_score_nums)
+                    assigned = True
+                
+                else:
+                    print("""\nInvalid input! Input must be a number from
+                      your available ability scores.\n""")
+            
+            except:
+                print("""\nInvalid input! Input must be a number from
+                      your available ability scores.\n""")
+    
+    return assigned_ability_scores
+
 
 
 def calculate_ability_modifiers(ability_score_dict: dict) -> dict:
 
-    pass
+    ability_modifiers = {}
+
+    for ability in ability_score_dict.keys():
+        ability_modifiers[ability] = (ability_score_dict[ability] - 10) // 2
+    
+    return ability_modifiers
+
 
 
 # print(retrieve_list_of_race_options())
@@ -199,4 +237,7 @@ def calculate_ability_modifiers(ability_score_dict: dict) -> dict:
 # backgrounds_file_name = "dnd_backgrounds_processed.json"
 # choose_background(backgrounds_file_name)
 
-generate_ability_score_numbers()
+ability_score_nums = generate_ability_score_numbers()
+assigned_scores = assign_ability_scores(ability_score_nums)
+print(assigned_scores)
+print(calculate_ability_modifiers(assigned_scores))
