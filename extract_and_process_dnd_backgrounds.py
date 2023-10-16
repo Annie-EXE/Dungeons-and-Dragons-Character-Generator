@@ -33,7 +33,7 @@ def get_info_for_background(root: Element, background_num: int) -> dict:
     for trait in traits:
 
         if trait.find("name").text == "Skill Proficiencies":
-            skill_proficiencies = trait.find("text").text.split(", ")
+            skill_proficiencies = trait.find("text").text
         
         elif "Feature" in trait.find("name").text:
             feature_name = trait.find("name").text.split(": ")[-1]

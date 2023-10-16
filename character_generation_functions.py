@@ -7,6 +7,15 @@ negative_responses = ['no', 'nope', 'nup', 'heck no', 'nada', 'n', ' n']
 
 abilities = ["STRENGTH", "DEXTERITY", "CONSTITUTION", "INTELLIGENCE", "WISDOM", "CHARISMA"]
 
+abilities_abbreviations = {"STR": "STRENGTH", "DEX": "DEXTERITY", "CON": "CONSTITUTION",
+                           "CHA": "CHARISMA", "WIS": "WISDOM", "INT": "INTELLIGENCE"}
+
+skills_abilities = {"STRENGTH": ["ATHLETICS"],
+                    "DEXTERITY": ["ACROBATICS", "SLEIGHT OF HAND", "STEALTH"],
+                    "INTELLIGENCE": ["ARCANA", "HISTORY", "INVESTIGATION", "NATURE", "RELIGION"],
+                    "WISDOM": ["ANIMAL HANDLING", "INSIGHT", "MEDICINE", "PERCEPTION", "SURVIVAL"],
+                    "CHARISMA": ["DECEPTION", "INTIMIDATION", "PERFORMANCE", "PERSUASION"]}
+
 def retrieve_list_of_race_options() -> list[str]:
 
     response = requests.get("https://www.dnd5eapi.co/api/races")
@@ -83,7 +92,7 @@ def check_selected_class_is_valid(input_class: str) -> str:
 
         if input_class.lower() == class_name.lower():
             print(f"""I used to be a {class_name} too, but felt that 
-            'disembodied voice' was my calling.""")
+            'disembodied narrator' was my calling.""")
             return class_name
 
     raise ValueError("Sorry, 5e doesn't offer that class!")
@@ -226,18 +235,96 @@ def calculate_ability_modifiers(ability_score_dict: dict) -> dict:
     return ability_modifiers
 
 
+def get_full_proficiency_list():
 
-# print(retrieve_list_of_race_options())
-# selected_race = check_selected_race_is_valid("dragonborn")
-# provide_user_with_info_on_selected_race(selected_race)
+    response = requests.get("https://www.dnd5eapi.co/api/proficiencies")
+    proficiency_data = response.json()
 
-# print(retrieve_list_of_class_options())
-# selected_class = check_selected_class_is_valid("bard")
+    valid_proficiencies = []
 
-# backgrounds_file_name = "dnd_backgrounds_processed.json"
-# choose_background(backgrounds_file_name)
+    for proficiency in proficiency_data["results"]:
+        proficiency_name = proficiency["name"].replace("Skill: ", "")
+        valid_proficiencies.append(proficiency_name)
 
-ability_score_nums = generate_ability_score_numbers()
-assigned_scores = assign_ability_scores(ability_score_nums)
-print(assigned_scores)
-print(calculate_ability_modifiers(assigned_scores))
+    return valid_proficiencies
+
+
+def get_background_proficiencies(backgrounds_file_name: str,
+                                 chosen_background: str,
+                                 valid_proficiencies: list[str]):
+
+    background_data = load_json_background_data(backgrounds_file_name) #redundant to load in multiple times - load globally
+
+    background_proficiencies = []
+
+    for background in background_data:
+        if background["Background Name"] == chosen_background:
+            proficiencies_str = background["Skill Proficiencies"]
+            for valid_proficiency in valid_proficiencies:
+                if valid_proficiency.lower() in proficiencies_str.lower():
+                    background_proficiencies.append(valid_proficiency.lower())
+
+    if len(background_proficiencies) > 2:
+        print(f"""\nAvailable proficiencies hailing from your background are 
+              {background_proficiencies}. You can choose 2!""")
+        filtered_proficiencies = []
+        first_pick = select_background_proficiency(background_proficiencies,
+                                                   filtered_proficiencies)
+        filtered_proficiencies.append(first_pick)
+        second_pick = select_background_proficiency(background_proficiencies,
+                                                   filtered_proficiencies)
+        filtered_proficiencies.append(second_pick)
+        return filtered_proficiencies
+
+    return background_proficiencies
+
+
+def select_background_proficiency(background_proficiencies: list,
+                                  filtered_proficiencies: list):
+
+    pick = input("""Please pick a proficiency from the list 
+                       of background proficiencies: """).lower()
+    while pick not in background_proficiencies and pick not in filtered_proficiencies:
+        pick = input("Not a valid background proficiency - please pick again: ").lower()
+        
+    return pick
+
+
+def set_proficiency_modifier(char_level: int):
+
+    if char_level <= 4:
+        return 2
+    
+    elif char_level <= 8:
+        return 3
+    
+    elif char_level <= 12:
+        return 4
+    
+    elif char_level <= 16:
+        return 5
+    
+    elif char_level <= 20:
+        return 6
+    
+    return "Invalid character level"
+
+
+if __name__ == "__main__":
+
+    character_level = 1
+
+    # print(retrieve_list_of_race_options())
+    # selected_race = check_selected_race_is_valid("dragonborn")
+    # provide_user_with_info_on_selected_race(selected_race)
+
+    # print(retrieve_list_of_class_options())
+    # selected_class = check_selected_class_is_valid("bard")
+
+    backgrounds_file_name = "dnd_backgrounds_processed.json"
+    chosen_background = choose_background(backgrounds_file_name)
+
+    # ability_score_nums = generate_ability_score_numbers()
+    # assigned_scores = assign_ability_scores(ability_score_nums)
+    # print(assigned_scores)
+    # print(calculate_ability_modifiers(assigned_scores))

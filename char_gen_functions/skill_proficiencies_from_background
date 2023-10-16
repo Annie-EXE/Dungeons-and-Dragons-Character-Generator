@@ -1,0 +1,76 @@
+import requests
+import json
+
+def load_json_background_data(file_path: str) -> list[dict]:
+
+    with open(file_path, "r") as json_file:
+        loaded_data = json.load(json_file)
+    
+    return loaded_data
+
+
+def get_full_proficiency_list():
+
+    response = requests.get("https://www.dnd5eapi.co/api/proficiencies")
+    proficiency_data = response.json()
+
+    valid_proficiencies = []
+
+    for proficiency in proficiency_data["results"]:
+        proficiency_name = proficiency["name"].replace("Skill: ", "")
+        valid_proficiencies.append(proficiency_name)
+
+    return valid_proficiencies
+
+
+def get_background_proficiencies(backgrounds_file_name: str,
+                                 chosen_background: str,
+                                 valid_proficiencies: list[str]):
+
+    background_data = load_json_background_data(backgrounds_file_name) #redundant to load in multiple times - load globally
+
+    background_proficiencies = []
+
+    for background in background_data:
+        if background["Background Name"] == chosen_background:
+            proficiencies_str = background["Skill Proficiencies"]
+            for valid_proficiency in valid_proficiencies:
+                if valid_proficiency.lower() in proficiencies_str.lower():
+                    background_proficiencies.append(valid_proficiency.lower())
+
+    if len(background_proficiencies) > 2:
+        print(f"""\nAvailable proficiencies hailing from your background are 
+              {background_proficiencies}. You can choose 2!""")
+        filtered_proficiencies = []
+        first_pick = select_background_proficiency(background_proficiencies,
+                                                   filtered_proficiencies)
+        filtered_proficiencies.append(first_pick)
+        second_pick = select_background_proficiency(background_proficiencies,
+                                                   filtered_proficiencies)
+        filtered_proficiencies.append(second_pick)
+        return filtered_proficiencies
+
+    return background_proficiencies
+
+
+def select_background_proficiency(background_proficiencies: list,
+                                  filtered_proficiencies: list):
+
+    pick = input("""Please pick a proficiency from the list 
+                       of background proficiencies: """).lower()
+    while pick not in background_proficiencies and pick not in filtered_proficiencies:
+        pick = input("Not a valid background proficiency - please pick again: ").lower()
+        
+    return pick
+
+
+def set_proficiency_modifier(): #TODO: adjust this so it calculates modifier based on level
+
+    return 2
+
+
+full_proficiency_list = get_full_proficiency_list()
+print(full_proficiency_list)
+character_background_proficiencies = get_background_proficiencies("dnd_backgrounds_processed.json",
+                                                                  "Inheritor", full_proficiency_list)
+print(character_background_proficiencies)
