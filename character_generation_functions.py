@@ -290,6 +290,19 @@ def select_background_proficiency(background_proficiencies: list,
     return pick
 
 
+def get_saving_throw_proficiencies_from_class(chosen_class: str):
+
+    response = requests.get(f"https://www.dnd5eapi.co/api/classes/{chosen_class.lower()}")
+    class_data = response.json()
+
+    ST_proficiencies = []
+
+    for proficiency in class_data["saving_throws"]:
+        ST_proficiencies.append(proficiency["name"])
+
+    return ST_proficiencies
+
+
 def set_proficiency_modifier(char_level: int):
 
     if char_level <= 4:

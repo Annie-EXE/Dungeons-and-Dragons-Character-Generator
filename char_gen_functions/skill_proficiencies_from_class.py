@@ -9,7 +9,7 @@ def get_proficiencies_from_class(chosen_class: str):
     class_proficiencies = []
 
     for proficiency in class_data["proficiency_choices"][0]["from"]["options"]:
-        print(proficiency["item"]["name"].replace("Skill: ", ""))
+        class_proficiencies.append(proficiency["item"]["name"].replace("Skill: ", ""))
 
     return class_proficiencies
 
