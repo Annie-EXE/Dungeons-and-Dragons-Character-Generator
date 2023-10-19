@@ -235,6 +235,38 @@ def calculate_ability_modifiers(ability_score_dict: dict) -> dict:
     return ability_modifiers
 
 
+def get_proficiencies_from_class(chosen_class: str):
+
+    response = requests.get(f"https://www.dnd5eapi.co/api/classes/{chosen_class.lower()}")
+    class_data = response.json()
+
+    class_proficiencies = []
+
+    for proficiency in class_data["proficiency_choices"][0]["from"]["options"]:
+        class_proficiencies.append(proficiency["item"]["name"].replace("Skill: ", "").lower())
+
+    if len(class_proficiencies) > 2:
+        filtered_proficiencies = []
+        first_pick = select_proficiency_option(class_proficiencies, filtered_proficiencies)
+        filtered_proficiencies.append(first_pick)
+        second_pick = select_proficiency_option(class_proficiencies, filtered_proficiencies)
+        filtered_proficiencies.append(second_pick)
+        return filtered_proficiencies
+
+    return class_proficiencies
+
+
+def select_proficiency_option(proficiency_options: list,
+                                  filtered_proficiencies: list):
+
+    pick = input("""Please pick a proficiency from the list 
+                       of background proficiencies: """).lower()
+    while pick not in proficiency_options and pick not in filtered_proficiencies:
+        pick = input("Not a valid background proficiency - please pick again: ").lower()
+        
+    return pick
+
+
 def get_full_proficiency_list():
 
     response = requests.get("https://www.dnd5eapi.co/api/proficiencies")
@@ -268,26 +300,15 @@ def get_background_proficiencies(backgrounds_file_name: str,
         print(f"""\nAvailable proficiencies hailing from your background are 
               {background_proficiencies}. You can choose 2!""")
         filtered_proficiencies = []
-        first_pick = select_background_proficiency(background_proficiencies,
+        first_pick = select_proficiency_option(background_proficiencies,
                                                    filtered_proficiencies)
         filtered_proficiencies.append(first_pick)
-        second_pick = select_background_proficiency(background_proficiencies,
+        second_pick = select_proficiency_option(background_proficiencies,
                                                    filtered_proficiencies)
         filtered_proficiencies.append(second_pick)
         return filtered_proficiencies
 
     return background_proficiencies
-
-
-def select_background_proficiency(background_proficiencies: list,
-                                  filtered_proficiencies: list):
-
-    pick = input("""Please pick a proficiency from the list 
-                       of background proficiencies: """).lower()
-    while pick not in background_proficiencies and pick not in filtered_proficiencies:
-        pick = input("Not a valid background proficiency - please pick again: ").lower()
-        
-    return pick
 
 
 def get_saving_throw_proficiencies_from_class(chosen_class: str):

@@ -42,10 +42,10 @@ def get_background_proficiencies(backgrounds_file_name: str,
         print(f"""\nAvailable proficiencies hailing from your background are 
               {background_proficiencies}. You can choose 2!""")
         filtered_proficiencies = []
-        first_pick = select_background_proficiency(background_proficiencies,
+        first_pick = select_proficiency_option(background_proficiencies,
                                                    filtered_proficiencies)
         filtered_proficiencies.append(first_pick)
-        second_pick = select_background_proficiency(background_proficiencies,
+        second_pick = select_proficiency_option(background_proficiencies,
                                                    filtered_proficiencies)
         filtered_proficiencies.append(second_pick)
         return filtered_proficiencies
@@ -53,12 +53,12 @@ def get_background_proficiencies(backgrounds_file_name: str,
     return background_proficiencies
 
 
-def select_background_proficiency(background_proficiencies: list,
+def select_proficiency_option(proficiency_options: list,
                                   filtered_proficiencies: list):
 
     pick = input("""Please pick a proficiency from the list 
                        of background proficiencies: """).lower()
-    while pick not in background_proficiencies and pick not in filtered_proficiencies:
+    while pick not in proficiency_options and pick not in filtered_proficiencies:
         pick = input("Not a valid background proficiency - please pick again: ").lower()
         
     return pick
