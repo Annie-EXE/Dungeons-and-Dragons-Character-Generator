@@ -7,8 +7,8 @@ negative_responses = ['no', 'nope', 'nup', 'heck no', 'nada', 'n', ' n']
 
 abilities = ["STRENGTH", "DEXTERITY", "CONSTITUTION", "INTELLIGENCE", "WISDOM", "CHARISMA"]
 
-abilities_abbreviations = {"STR": "STRENGTH", "DEX": "DEXTERITY", "CON": "CONSTITUTION",
-                           "CHA": "CHARISMA", "WIS": "WISDOM", "INT": "INTELLIGENCE"}
+abilities_abbreviations = {"STRENGTH": "STR", "DEXTERITY": "DEX", "CONSTITUTION": "CON",
+                           "CHARISMA": "CHA", "WISDOM": "WIS", "INTELLIGENCE": "INT"}
 
 skills_abilities = {"STRENGTH": ["ATHLETICS"],
                     "DEXTERITY": ["ACROBATICS", "SLEIGHT OF HAND", "STEALTH"],
@@ -344,6 +344,20 @@ def set_proficiency_modifier(char_level: int):
     return "Invalid character level"
 
 
+def get_saving_throws(proficiency_modifier: int,
+                        ability_modifiers: dict,
+                        abilities_abbreviations: dict,
+                        saving_throw_proficiencies: list[str]):
+    
+    saving_throws = ability_modifiers
+
+    for saving_throw in saving_throws.keys():
+        if abilities_abbreviations[saving_throw] in saving_throw_proficiencies:
+            saving_throws[saving_throw] += proficiency_modifier
+    
+    return saving_throws
+
+
 if __name__ == "__main__":
 
     character_level = 1
@@ -362,3 +376,14 @@ if __name__ == "__main__":
     # assigned_scores = assign_ability_scores(ability_score_nums)
     # print(assigned_scores)
     # print(calculate_ability_modifiers(assigned_scores))
+
+    proficiency_modifier = set_proficiency_modifier(1)
+    ability_score_numbers = generate_ability_score_numbers()
+    ability_score_dict = assign_ability_scores(ability_score_numbers)
+    ability_modifiers = calculate_ability_modifiers(ability_score_dict)
+    print(ability_modifiers)
+    proficient_saving_throws = get_saving_throw_proficiencies_from_class("rogue")
+    print(proficient_saving_throws)
+    saving_throws = get_saving_throws(proficiency_modifier, ability_modifiers,
+                                      abilities_abbreviations, proficient_saving_throws)
+    print(saving_throws)
