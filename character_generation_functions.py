@@ -16,6 +16,27 @@ skills_abilities = {"STRENGTH": ["ATHLETICS"],
                     "WISDOM": ["ANIMAL HANDLING", "INSIGHT", "MEDICINE", "PERCEPTION", "SURVIVAL"],
                     "CHARISMA": ["DECEPTION", "INTIMIDATION", "PERFORMANCE", "PERSUASION"]}
 
+skills_list = [
+    "ACROBATICS",
+    "ANIMAL HANDLING",
+    "ARCANA",
+    "ATHLETICS",
+    "DECEPTION",
+    "HISTORY",
+    "INSIGHT",
+    "INTIMIDATION",
+    "INVESTIGATION",
+    "MEDICINE",
+    "NATURE",
+    "PERCEPTION",
+    "PERFORMANCE",
+    "PERSUASION",
+    "RELIGION",
+    "SLEIGHT OF HAND",
+    "STEALTH",
+    "SURVIVAL",
+]
+
 def retrieve_list_of_race_options() -> list[str]:
 
     response = requests.get("https://www.dnd5eapi.co/api/races")
@@ -259,8 +280,9 @@ def get_proficiencies_from_class(chosen_class: str):
 def select_proficiency_option(proficiency_options: list,
                                   filtered_proficiencies: list):
 
-    pick = input("""Please pick a proficiency from the list 
-                       of background proficiencies: """).lower()
+    pick = input(f"""{proficiency_options}
+                    Please pick a proficiency from the list 
+                    of background proficiencies: """).lower()
     while pick not in proficiency_options and pick not in filtered_proficiencies:
         pick = input("Not a valid background proficiency - please pick again: ").lower()
         
@@ -290,7 +312,7 @@ def get_background_proficiencies(backgrounds_file_name: str,
     background_proficiencies = []
 
     for background in background_data:
-        if background["Background Name"] == chosen_background:
+        if background["Background Name"] == chosen_background.title():
             proficiencies_str = background["Skill Proficiencies"]
             for valid_proficiency in valid_proficiencies:
                 if valid_proficiency.lower() in proficiencies_str.lower():
@@ -309,6 +331,18 @@ def get_background_proficiencies(backgrounds_file_name: str,
         return filtered_proficiencies
 
     return background_proficiencies
+
+
+def combine_class_and_background_proficiencies(class_proficiencies: list,
+                                               background_proficiencies: list):
+    
+    proficiencies = class_proficiencies
+
+    for proficiency in background_proficiencies:
+        if proficiency not in proficiencies:
+            proficiencies.append(proficiency)
+
+    return proficiencies
 
 
 def get_saving_throw_proficiencies_from_class(chosen_class: str):
@@ -358,6 +392,26 @@ def get_saving_throws(proficiency_modifier: int,
     return saving_throws
 
 
+def calculate_skills_modifiers(proficiency_modifier: int,
+                               combined_skill_proficiencies: list[str],
+                               skills_list: list[str],
+                               ability_score_modifiers: dict,
+                               skills_abilities: dict):
+    
+    skills_modifiers = {}
+
+    for skill in skills_list:
+        for key in skills_abilities.keys():
+            if skill in skills_abilities[key]:
+                relevant_ability = key
+        skills_modifiers[skill] = ability_score_modifiers[relevant_ability]
+        print(skills_modifiers)
+    for proficiency in combined_skill_proficiencies:
+        skills_modifiers[proficiency.upper()] += proficiency_modifier
+    
+    return skills_modifiers
+
+
 if __name__ == "__main__":
 
     character_level = 1
@@ -387,3 +441,20 @@ if __name__ == "__main__":
     saving_throws = get_saving_throws(proficiency_modifier, ability_modifiers,
                                       abilities_abbreviations, proficient_saving_throws)
     print(saving_throws)
+    valid_proficiencies = get_full_proficiency_list()
+    skill_proficiencies_from_class = get_proficiencies_from_class("rogue")
+    print(skill_proficiencies_from_class)
+    skill_proficiencies_from_background = get_background_proficiencies(backgrounds_file_name, "charlatan",
+                                                                       valid_proficiencies)
+    print(skill_proficiencies_from_background)
+    combined_skill_proficiencies = combine_class_and_background_proficiencies(skill_proficiencies_from_class,
+                                                                              skill_proficiencies_from_background)
+    print(combined_skill_proficiencies)
+
+    skills_modifiers = calculate_skills_modifiers(proficiency_modifier,
+                                                  combined_skill_proficiencies,
+                                                  skills_list,
+                                                  ability_modifiers,
+                                                  skills_abilities)
+    print(ability_modifiers)
+    print(skills_modifiers)
