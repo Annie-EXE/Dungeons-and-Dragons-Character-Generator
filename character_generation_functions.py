@@ -256,7 +256,7 @@ def calculate_ability_modifiers(ability_score_dict: dict) -> dict:
     return ability_modifiers
 
 
-def get_proficiencies_from_class(chosen_class: str):
+def get_skill_proficiencies_from_class(chosen_class: str):
 
     response = requests.get(f"https://www.dnd5eapi.co/api/classes/{chosen_class.lower()}")
     class_data = response.json()
@@ -267,6 +267,7 @@ def get_proficiencies_from_class(chosen_class: str):
         class_proficiencies.append(proficiency["item"]["name"].replace("Skill: ", "").lower())
 
     if len(class_proficiencies) > 2:
+        print(class_data["proficiency_choices"]["desc"])
         filtered_proficiencies = []
         first_pick = select_proficiency_option(class_proficiencies, filtered_proficiencies)
         filtered_proficiencies.append(first_pick)
@@ -412,6 +413,45 @@ def calculate_skills_modifiers(proficiency_modifier: int,
     return skills_modifiers
 
 
+def get_starting_equipment(character_class: str): 
+    """
+    Takes class (lowercase string) and returns a
+    dictionary of the relevant starting equipment
+    """
+    response = requests.get(f"https://www.dnd5eapi.co/api/classes/{character_class}")
+    class_data = response.json()
+
+    starting_equipment = class_data["starting_equipment"]
+
+    print("Your starting equipment:")
+    for item in starting_equipment:
+        print(f"{item['equipment']['name']}: {item['quantity']}")
+
+    return starting_equipment
+
+
+def get_passive_perception(skills_modifiers: dict) -> int:
+    """
+    Calculates a character's passive perception
+    using their perception skill modifier
+    """
+    return 10 + skills_modifiers["PERCEPTION"]
+
+
+def get_general_proficiencies_from_class(character_class: str) -> list[str]:
+    """
+    Gets a list of proficiencies (excluding skill
+    and saving throw proficiencies) hailing from
+    the character's class
+    """
+    response = requests.get(f"https://www.dnd5eapi.co/api/classes/{character_class}")
+    class_data = response.json()
+    class_proficiencies = [p["name"] for p in class_data["proficiencies"]
+                           if "Skill" not in p["name"] and "Saving Throw" not in p["name"]]
+
+    return class_proficiencies
+
+
 if __name__ == "__main__":
 
     character_level = 1
@@ -423,38 +463,41 @@ if __name__ == "__main__":
     # print(retrieve_list_of_class_options())
     # selected_class = check_selected_class_is_valid("bard")
 
-    backgrounds_file_name = "dnd_backgrounds_processed.json"
-    chosen_background = choose_background(backgrounds_file_name)
+    # backgrounds_file_name = "dnd_backgrounds_processed.json"
+    # chosen_background = choose_background(backgrounds_file_name)
 
     # ability_score_nums = generate_ability_score_numbers()
     # assigned_scores = assign_ability_scores(ability_score_nums)
     # print(assigned_scores)
     # print(calculate_ability_modifiers(assigned_scores))
 
-    proficiency_modifier = set_proficiency_modifier(1)
-    ability_score_numbers = generate_ability_score_numbers()
-    ability_score_dict = assign_ability_scores(ability_score_numbers)
-    ability_modifiers = calculate_ability_modifiers(ability_score_dict)
-    print(ability_modifiers)
-    proficient_saving_throws = get_saving_throw_proficiencies_from_class("rogue")
-    print(proficient_saving_throws)
-    saving_throws = get_saving_throws(proficiency_modifier, ability_modifiers,
-                                      abilities_abbreviations, proficient_saving_throws)
-    print(saving_throws)
-    valid_proficiencies = get_full_proficiency_list()
-    skill_proficiencies_from_class = get_proficiencies_from_class("rogue")
-    print(skill_proficiencies_from_class)
-    skill_proficiencies_from_background = get_background_proficiencies(backgrounds_file_name, "charlatan",
-                                                                       valid_proficiencies)
-    print(skill_proficiencies_from_background)
-    combined_skill_proficiencies = combine_class_and_background_proficiencies(skill_proficiencies_from_class,
-                                                                              skill_proficiencies_from_background)
-    print(combined_skill_proficiencies)
+    # proficiency_modifier = set_proficiency_modifier(1)
+    # ability_score_numbers = generate_ability_score_numbers()
+    # ability_score_dict = assign_ability_scores(ability_score_numbers)
+    # ability_modifiers = calculate_ability_modifiers(ability_score_dict)
+    # print(ability_modifiers)
+    # proficient_saving_throws = get_saving_throw_proficiencies_from_class("rogue")
+    # print(proficient_saving_throws)
+    # saving_throws = get_saving_throws(proficiency_modifier, ability_modifiers,
+    #                                   abilities_abbreviations, proficient_saving_throws)
+    # print(saving_throws)
+    # valid_proficiencies = get_full_proficiency_list()
+    # skill_proficiencies_from_class = get_skill_proficiencies_from_class("rogue")
+    # print(skill_proficiencies_from_class)
+    # skill_proficiencies_from_background = get_background_proficiencies(backgrounds_file_name, "charlatan",
+    #                                                                    valid_proficiencies)
+    # print(skill_proficiencies_from_background)
+    # combined_skill_proficiencies = combine_class_and_background_proficiencies(skill_proficiencies_from_class,
+    #                                                                           skill_proficiencies_from_background)
+    # print(combined_skill_proficiencies)
 
-    skills_modifiers = calculate_skills_modifiers(proficiency_modifier,
-                                                  combined_skill_proficiencies,
-                                                  skills_list,
-                                                  ability_modifiers,
-                                                  skills_abilities)
-    print(ability_modifiers)
-    print(skills_modifiers)
+    # skills_modifiers = calculate_skills_modifiers(proficiency_modifier,
+    #                                               combined_skill_proficiencies,
+    #                                               skills_list,
+    #                                               ability_modifiers,
+    #                                               skills_abilities)
+    # print(ability_modifiers)
+    # print(skills_modifiers)
+
+    print(get_starting_equipment('druid'))
+    print(get_general_proficiencies_from_class('druid'))
