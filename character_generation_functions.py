@@ -3,9 +3,7 @@ import json
 import random
 
 affirmative_responses = ['yes', 'y', ' y', 'yup', 'yurr', 'yas']
-negative_responses = ['no', 'nope', 'nup', 'heck no', 'nada', 'n', ' n']
-
-abilities = ["STRENGTH", "DEXTERITY", "CONSTITUTION", "INTELLIGENCE", "WISDOM", "CHARISMA"]
+negative_responses = ['no', 'nope', 'nup', 'heck no', 'nada', 'n', ' n'] # will add buttons at some point lol
 
 abilities_abbreviations = {"STRENGTH": "STR", "DEXTERITY": "DEX", "CONSTITUTION": "CON",
                            "CHARISMA": "CHA", "WISDOM": "WIS", "INTELLIGENCE": "INT"}
@@ -13,8 +11,11 @@ abilities_abbreviations = {"STRENGTH": "STR", "DEXTERITY": "DEX", "CONSTITUTION"
 skills_abilities = {"STRENGTH": ["ATHLETICS"],
                     "DEXTERITY": ["ACROBATICS", "SLEIGHT OF HAND", "STEALTH"],
                     "INTELLIGENCE": ["ARCANA", "HISTORY", "INVESTIGATION", "NATURE", "RELIGION"],
+                    "CONSTITUTION": [],
                     "WISDOM": ["ANIMAL HANDLING", "INSIGHT", "MEDICINE", "PERCEPTION", "SURVIVAL"],
                     "CHARISMA": ["DECEPTION", "INTIMIDATION", "PERFORMANCE", "PERSUASION"]}
+
+abilities = [key for key in skills_abilities.keys()]
 
 skills_list = [value for values in skills_abilities.values() for value in values]
 
