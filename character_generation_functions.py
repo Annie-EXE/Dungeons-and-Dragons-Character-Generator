@@ -438,6 +438,37 @@ def get_passive_perception(skills_modifiers: dict) -> int:
     return 10 + skills_modifiers["PERCEPTION"]
 
 
+def get_initiative_modifier(ability_modifiers: dict) -> int:
+    """
+    Returns a character's initiative modifier,
+    equivalent to their dexterity ability modifier
+    """
+    return ability_modifiers["DEXTERITY"]
+
+
+def get_character_speed(character_race: str) -> int:
+    """
+    Returns a character's movement speed,
+    dependent on their race
+    """
+    response = requests.get(f"https://www.dnd5eapi.co/api/races/{character_race.lower()}")
+    race_data = response.json()
+    return race_data["speed"]
+
+
+def get_hit_dice(character_level: int, character_class: str) -> str:
+    """
+    Returns a character's hit dice, based on their
+    level and class
+    """
+    response = requests.get(f"https://www.dnd5eapi.co/api/classes/{character_class.lower()}")
+    class_data = response.json()
+    hit_dice = {}
+    hit_dice["dice_num"] = character_level
+    hit_dice["dice_type"] = class_data["hit_die"]
+    return hit_dice
+
+
 def get_general_proficiencies_from_class(character_class: str) -> list[str]:
     """
     Gets a list of proficiencies (excluding skill
@@ -450,6 +481,28 @@ def get_general_proficiencies_from_class(character_class: str) -> list[str]:
                            if "Skill" not in p["name"] and "Saving Throw" not in p["name"]]
 
     return class_proficiencies
+
+
+def calculate_max_hp(ability_modifiers: dict, hit_dice: dict) -> int:
+    """
+    Calculates a character's max health based on
+    their constitution ability modifier and hit dice
+    """
+    return hit_dice["dice_num"] * (hit_dice["dice_type"] + ability_modifiers["CONSTITUTION"])
+
+
+def get_features_and_traits(character_background: str):
+    #features from background and traits from race
+    #let user choose personality traits, ideals, bonds, flaws
+    pass
+
+
+def get_languages(character_race: str):
+    pass
+
+
+def choose_alignment():
+    pass
 
 
 if __name__ == "__main__":
