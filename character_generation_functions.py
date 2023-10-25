@@ -16,26 +16,7 @@ skills_abilities = {"STRENGTH": ["ATHLETICS"],
                     "WISDOM": ["ANIMAL HANDLING", "INSIGHT", "MEDICINE", "PERCEPTION", "SURVIVAL"],
                     "CHARISMA": ["DECEPTION", "INTIMIDATION", "PERFORMANCE", "PERSUASION"]}
 
-skills_list = [
-    "ACROBATICS",
-    "ANIMAL HANDLING",
-    "ARCANA",
-    "ATHLETICS",
-    "DECEPTION",
-    "HISTORY",
-    "INSIGHT",
-    "INTIMIDATION",
-    "INVESTIGATION",
-    "MEDICINE",
-    "NATURE",
-    "PERCEPTION",
-    "PERFORMANCE",
-    "PERSUASION",
-    "RELIGION",
-    "SLEIGHT OF HAND",
-    "STEALTH",
-    "SURVIVAL",
-]
+skills_list = [value for values in skills_abilities.values() for value in values]
 
 def retrieve_list_of_race_options() -> list[str]:
 
