@@ -1,6 +1,6 @@
 import requests
 import re
-
+import string
 import json
 import random
 
@@ -397,7 +397,7 @@ def calculate_skills_modifiers(proficiency_modifier: int,
     return skills_modifiers
 
 
-def get_starting_equipment(character_class: str): 
+def get_starting_equipment(character_class: str) -> list[str]: 
     """
     Takes class (lowercase string) and returns a
     dictionary of the relevant starting equipment
@@ -411,13 +411,36 @@ def get_starting_equipment(character_class: str):
     for item in starting_equipment:
         print(f"{item['equipment']['name']}: {item['quantity']}")
 
+    starting_equipment_options = class_data["starting_equipment_options"]
+
     print("\nYou also have some choices to make.")
+    for option in starting_equipment_options:
+        user_choice = make_starting_equipment_choice(option["desc"])
+        starting_equipment.append(user_choice)
 
     return starting_equipment
 
 
 def make_starting_equipment_choice(choice_desc: str) -> str:
+    """
+    Lets user make a choice from starting
+    equipment options
+    """
+    options = split_options(choice_desc)
     
+    valid_choices = set(string.ascii_lowercase[:len(options)])
+    
+    while True:
+        print("Choose your starting equipment:")
+        for i, option in enumerate(options):
+            print(f"({string.ascii_lowercase[i]}) {option}")
+        
+        user_choice = input("Enter your choice: ").strip().lower()
+        
+        if user_choice in valid_choices:
+            return options[ord(user_choice) - ord('a')]
+        else:
+            print("Invalid choice. Please choose a valid option.")
 
 
 def split_options(choice_desc: str) -> list[str]:
@@ -426,9 +449,7 @@ def split_options(choice_desc: str) -> list[str]:
     list of options, using regex
     """
     options = re.findall(r'\([a-z]\)\s*([^()]+)', choice_desc)
-
     options = [option.replace(' or ', '').strip() for option in options]
-
     return options
 
 
