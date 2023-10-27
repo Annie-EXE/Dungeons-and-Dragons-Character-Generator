@@ -1,4 +1,6 @@
 import requests
+import re
+
 import json
 import random
 
@@ -409,7 +411,25 @@ def get_starting_equipment(character_class: str):
     for item in starting_equipment:
         print(f"{item['equipment']['name']}: {item['quantity']}")
 
+    print("\nYou also have some choices to make.")
+
     return starting_equipment
+
+
+def make_starting_equipment_choice(choice_desc: str) -> str:
+    
+
+
+def split_options(choice_desc: str) -> list[str]:
+    """
+    Splits a string of options, to return a
+    list of options, using regex
+    """
+    options = re.findall(r'\([a-z]\)\s*([^()]+)', choice_desc)
+
+    options = [option.replace(' or ', '').strip() for option in options]
+
+    return options
 
 
 def get_passive_perception(skills_modifiers: dict) -> int:
